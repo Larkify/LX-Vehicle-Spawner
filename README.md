@@ -23,4 +23,4 @@ If your quesiton didn't get answered and you need extra help, please open an [is
 
 ## Download
 **Download always latest *production-ready* Release:**
-https://github.com/NicolasStr/fivem-loading-sleek/releases
+https://github.com/Larkify/LX-Vehicle-Spawner/releases
