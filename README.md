@@ -1,4 +1,4 @@
-# LX Vehicle Spawner
+# 🚗 LX Vehicle Spawner
 A fully customisable FiveM vehicle spawner built in MenuV.
 
 ## Demo
