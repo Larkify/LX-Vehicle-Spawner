@@ -1,3 +1,5 @@
+vehicleConfigTable = {}
+
 local function handleVehicleSpawn(spawncode, replaceVehicle)
     RequestModel(spawncode)
 
@@ -15,13 +17,27 @@ local function handleVehicleSpawn(spawncode, replaceVehicle)
     local playerPed = PlayerPedId()
     local x, y, z = table.unpack(GetEntityCoords(playerPed))
     local heading = GetEntityHeading(playerPed)
-    local vehicle = CreateVehicle(spawncode, x + 4, y, z, heading, false, false)
-
+    
     if replaceVehicle then
         if IsPedInAnyVehicle(playerPed, true) then
             local currentVehicle = GetVehiclePedIsIn(playerPed, false)
             SetEntityAsMissionEntity(currentVehicle, true, true);  
             DeleteVehicle(currentVehicle)
+            vehicle = CreateVehicle(spawncode, x + 4, y, z, heading, false, false)
+        else
+            vehicle = CreateVehicle(spawncode, x + 4, y, z, heading, false, false)
+        end
+    else
+        vehicle = CreateVehicle(spawncode, x + 4, y, z, heading, false, false)
+    end
+
+    for i,v in pairs(vehicleConfigTable) do 
+        if v.spawncode == spawncode then 
+            SetVehicleLivery(vehicle, v.livery)
+            SetVehicleFuelLevel(vehicle, v.defaultFuel)
+            for _, extra in ipairs(v.extras) do 
+                SetVehicleExtra(vehicle, extra, false)
+            end
         end
     end
 
@@ -55,8 +71,20 @@ for _, categoryName in ipairs(orderedCategories) do
     local subMenu = MenuV:CreateMenu(categoryName, categoryName .. ' vehicles', 'topright', 255, 0, 0, 'size-125', nil, 'menuv', 'sub_menu_' .. subMenu_index, 'native')
     mainMenu:AddButton({ icon = categoryInfo.icon, label = categoryName, value = subMenu, description = 'View ' .. categoryName .. ' vehicles' })
     for _, vehicle in ipairs(categoryInfo.vehicles) do
-        local vehicleSpawnBtn = subMenu:AddButton({ icon = nil, label = vehicle.name, value = vehicle.spawncode, description = "Spawncode: " .. vehicle.spawncode })
+        if MenuConfig.General.showSpawnCodeInDescription == true then 
+            vehicleSpawnBtn = subMenu:AddButton({ icon = nil, label = vehicle.name, value = vehicle.spawncode, description = "Spawncode: " .. vehicle.spawncode })
+        else
+            vehicleSpawnBtn = subMenu:AddButton({ icon = nil, label = vehicle.name, value = vehicle.spawncode, description = "Press enter to spawn the vehicle selected"})
+        end
         table.insert(vehicleSpawnButtons, vehicleSpawnBtn)
+
+        vehicleConfigTable[vehicle.name] = {
+            spawncode = vehicle.spawncode,
+            livery = vehicle.livery,
+            extras = vehicle.extras,
+            defaultFuel = vehicle.defaultFuel
+        }
+        
     end
 end
 
